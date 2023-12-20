@@ -7,6 +7,6 @@ mat3 = [[0 for col in range(len(mat1[0]))] for row in range(len(mat1))]
 # Iterate through rows and columns using numerical indices:
 for i in range(len(mat1)):
   for j in range(len(mat1[0])):  # Use j for column index
-    mat3[i][j] = mat1[i][j] + mat2[i][j]  # Add corresponding elements
+    mat3[i][j]= mat1[i][j] + mat2[i][j]  # Add corresponding elements
 
 print(mat3)

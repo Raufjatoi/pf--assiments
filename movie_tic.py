@@ -36,5 +36,5 @@ calculate_ticket_price()
 calculate_discount()
 
 print(f"Your ticket price is {ticket}")
-print(f"After discount, it is {ticket1:.1f}")
+print(f"After discount, it is {ticket1:.2f}")
 

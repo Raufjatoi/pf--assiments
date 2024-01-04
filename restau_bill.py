@@ -1,3 +1,54 @@
+
+#Design a function that takes the ordered items, quantities, and prices to calculate the total bill amount.
+#Include options for applying discounts, taxes, and splitting the bill among friends.
+
+def restau_bill(ordered_items, price, discounts, tax, sp):
+    total = ordered_items * price
+    discount = total * (discounts / 100) if discounts > 0 else 0
+    total_after_discount = total - discount
+    total_after_tax = total_after_discount + (total_after_discount * (tax / 100)) if tax > 0 else total_after_discount
+    per_person_cost = total_after_tax / sp if sp > 0 else total_after_tax
+
+    print(f'Total price is: {total}')
+    print(f'Discount: {discount}')
+    print(f'Total after discount: {total_after_discount}')
+    print(f'Total after Tax: {total_after_tax}')
+    print(f'Each person can split into: {per_person_cost}')
+
+
+ordered_items = int(input("Enter how many orders you made: "))
+price = int(input("Enter price per item: "))
+discounts = int(input("Enter discount percentage or 0 for no discount: "))
+tax = int(input("Enter sales tax percentage or 0 for no tax: "))
+sp = int(input("Enter number of people to split the bill or 0 for no splitting: "))
+
+restau_bill(ordered_items, price, discounts, tax, sp)
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
 def calculate_total_bill(ordered_items, quantities, prices, discount_percentage=0, tax_percentage=0, split_bill=False, num_friends=1):
     # Assume prices is a dictionary mapping each item to its price
     # Example: prices = {'item1': 10, 'item2': 20, 'item3': 15}
@@ -36,3 +87,4 @@ num_friends = 3
 
 total_bill = calculate_total_bill(ordered_items, quantities, prices, discount_percentage, tax_percentage, split_bill, num_friends)
 print(f'Total Bill Amount: ${total_bill:.2f}')
+'''

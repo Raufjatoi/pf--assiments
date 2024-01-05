@@ -92,3 +92,26 @@ def comment_analyze(comment):
 # Example usage
 user_comment = input("Enter your comment: ")
 comment_analyze(user_comment)
+
+
+
+
+
+
+### import re 
+
+"""
+import re
+
+text = "Hello, my email is john@example.com"
+
+# Using re.search() to find the email address
+match = re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', text)
+
+if match:
+    print("Email found:", match.group())
+else:
+    print("No email found.")
+
+
+"""

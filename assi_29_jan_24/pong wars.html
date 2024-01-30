@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pong wars | Raauf ( c n v ) </title>
+ 
+    <style>
+      html {
+        height: 100%;
+      }
+
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(to bottom, #d6080833 0%, #d9e8e3 100%);
+      }
+
+      #container {
+        display: flex;
+        width: min(100%, 70vh);
+        max-width: 600px;
+        align-items: center;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      #pongCanvas {
+        display: block;
+        border-radius: 4px;
+        overflow: hidden;
+        width: 100%;
+        margin-top: auto;
+        box-shadow: 0 0 20px #d6080833;
+      }
+
+      #score {
+        font-family: monospace;
+        margin-top: 30px;
+        font-size: 20px;
+        padding-left: 20px;
+        color: red;
+      }
+
+      #made {
+        font-family: monospace;
+        margin-top: auto;
+        margin-bottom: 20px;
+        font-size: 12px;
+        padding-left: 20px;
+      }
+
+      #made a {
+        color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+      <canvas id="pongCanvas" width="800" height="800"></canvas>
+      <div id="score"></div>
+      <p id="made">
+        made by <a href="https://replit.com/@RaufPokemon1\">Rauuf </a> | source on
+        <a href="https://replit.com/@RaufPokemon1/red-n-white-just-a-freetime-projj#index.html">replit</a>
+      </p>
+    </div>
+  </body>
+
+  <script>
+    const colorPalette = {
+      ArcticPowder: "#F1F6F4",
+      MysticMint: "#D9E8E3",
+      Forsythia: "#FFC801",
+      DeepSaffron: "#FF9932",
+      Red: "red",   
+      White: "#F1F6F4",   
+    };
+
+    const canvas = document.getElementById("pongCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreElement = document.getElementById("score");
+
+    const RED_COLOR = colorPalette.Red;  
+    const RED_BALL_COLOR = colorPalette.White;  
+
+    const WHITE_COLOR = colorPalette.White;  
+    const WHITE_BALL_COLOR = colorPalette.Red;  
+
+    const SQUARE_SIZE = 25;
+
+    const numSquaresX = canvas.width / SQUARE_SIZE;
+    const numSquaresY = canvas.height / SQUARE_SIZE;
+
+    let squares = [];
+
+    for (let i = 0; i < numSquaresX; i++) {
+      squares[i] = [];
+      for (let j = 0; j < numSquaresY; j++) {
+        squares[i][j] = i < numSquaresX / 2 ? RED_COLOR : WHITE_COLOR;  
+      }
+    }
+
+    let x1 = canvas.width / 4;
+    let y1 = canvas.height / 2;
+    let dx1 = 12.5;
+    let dy1 = -12.5;
+
+    let x2 = (canvas.width / 4) * 3;
+    let y2 = canvas.height / 2;
+    let dx2 = -12.5;
+    let dy2 = 12.5;
+
+    let iteration = 0;
+
+    function drawBall(x, y, color) {
+      ctx.beginPath();
+      ctx.arc(x, y, SQUARE_SIZE / 2, 0, Math.PI * 2, false);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawSquares() {
+      for (let i = 0; i < numSquaresX; i++) {
+        for (let j = 0; j < numSquaresY; j++) {
+          ctx.fillStyle = squares[i][j];
+          ctx.fillRect(
+            i * SQUARE_SIZE,
+            j * SQUARE_SIZE,
+            SQUARE_SIZE,
+            SQUARE_SIZE
+          );
+        }
+      }
+    }
+
+    function randomNum(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function updateSquareAndBounce(x, y, dx, dy, color) {
+      let updatedDx = dx;
+      let updatedDy = dy;
+
+      // Check multiple points around the ball's circumference
+      for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+        let checkX = x + Math.cos(angle) * (SQUARE_SIZE / 2);
+        let checkY = y + Math.sin(angle) * (SQUARE_SIZE / 2);
+
+        let i = Math.floor(checkX / SQUARE_SIZE);
+        let j = Math.floor(checkY / SQUARE_SIZE);
+
+        if (i >= 0 && i < numSquaresX && j >= 0 && j < numSquaresY) {
+          if (squares[i][j] !== color) {
+            squares[i][j] = color;
+
+            // Determine bounce direction based on the angle
+            if (Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle))) {
+              updatedDx = -updatedDx;
+            } else {
+              updatedDy = -updatedDy;
+            }
+
+            // Add some randomness to the bounce to prevent the balls from getting stuck in a loop
+            updatedDx += randomNum(-0.25, 0.25);
+            updatedDy += randomNum(-0.25, 0.25);
+          }
+        }
+      }
+
+      return { dx: updatedDx, dy: updatedDy };
+    }
+
+    function updateScoreElement() {
+      let redScore = 0;   // Updated from dayScore
+      let whiteScore = 0; // Updated from nightScore
+      for (let i = 0; i < numSquaresX; i++) {
+        for (let j = 0; j < numSquaresY; j++) {
+          if (squares[i][j] === RED_COLOR) {   // Updated from DAY_COLOR
+            redScore++;
+          } else if (squares[i][j] === WHITE_COLOR) {   // Updated from NIGHT_COLOR
+            whiteScore++;
+          }
+        }
+      }
+
+      scoreElement.textContent = `red ${redScore} | white ${whiteScore}`;  // Updated from day and night
+    }
+
+    function checkBoundaryCollision(x, y, dx, dy) {
+      if (x + dx > canvas.width - SQUARE_SIZE / 2 || x + dx < SQUARE_SIZE / 2) {
+        dx = -dx;
+      }
+      if (
+        y + dy > canvas.height - SQUARE_SIZE / 2 ||
+        y + dy < SQUARE_SIZE / 2
+      ) {
+        dy = -dy;
+      }
+
+      return { dx: dx, dy: dy };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawSquares();
+
+      drawBall(x1, y1, RED_BALL_COLOR);   // Updated from DAY_BALL_COLOR
+      let bounce1 = updateSquareAndBounce(x1, y1, dx1, dy1, RED_COLOR);   // Updated from DAY_COLOR
+      dx1 = bounce1.dx;
+      dy1 = bounce1.dy;
+
+      drawBall(x2, y2, WHITE_BALL_COLOR);   // Updated from NIGHT_BALL_COLOR
+      let bounce2 = updateSquareAndBounce(x2, y2, dx2, dy2, WHITE_COLOR);   // Updated from NIGHT_COLOR
+      dx2 = bounce2.dx;
+      dy2 = bounce2.dy;
+
+      let boundary1 = checkBoundaryCollision(x1, y1, dx1, dy1);
+      dx1 = boundary1.dx;
+      dy1 = boundary1.dy;
+
+      let boundary2 = checkBoundaryCollision(x2, y2, dx2, dy2);
+      dx2 = boundary2.dx;
+      dy2 = boundary2.dy;
+
+      x1 += dx1;
+      y1 += dy1;
+      x2 += dx2;
+      y2 += dy2;
+
+      iteration++;
+      if (iteration % 1_000 === 0) console.log("interation", iteration);
+
+      updateScoreElement();
+
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
+  </script>
+</html>
